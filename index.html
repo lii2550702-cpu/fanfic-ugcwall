@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>同人留言墙 · 从入圈到入坑</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#EED6EC;--mid:#D4A8D0;--deep:#7A4A7A;--cream:#FAF7FB;
+  --text:#2D1F2D;--muted:#9A8A9A;--border:#E4CDE2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--deep);
+  font-family:'Noto Sans SC',sans-serif;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+.bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.bg-circle{position:absolute;border-radius:50%;background:rgba(238,214,236,.07);}
+.header{
+  position:relative;z-index:10;
+  padding:24px 32px 20px;
+  text-align:center;
+  border-bottom:0.5px solid rgba(238,214,236,.2);
+  flex-shrink:0;
+}
+.header-eyebrow{
+  font-size:10px;letter-spacing:.3em;color:rgba(255,255,255,.4);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.header-title{
+  font-family:'Noto Serif SC',serif;
+  font-size:22px;color:white;font-weight:600;letter-spacing:.05em;
+  margin-bottom:4px;
+}
+.header-title em{color:var(--mid);font-style:normal;}
+.header-sub{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.08em;}
+.wall-area{
+  flex:1;overflow:hidden;position:relative;z-index:1;
+  padding:20px 24px;
+}
+.wall-inner{
+  width:100%;height:100%;
+  position:relative;overflow:hidden;
+}
+.note-card{
+  position:absolute;
+  width:160px;
+  border-radius:4px;
+  padding:14px 14px 18px;
+  cursor:default;
+  transition:transform .3s ease, box-shadow .3s ease;
+  box-shadow:2px 3px 12px rgba(0,0,0,.25);
+  animation:noteAppear .5s cubic-bezier(.175,.885,.32,1.275);
+}
+.note-card:hover{
+  transform:scale(1.06) rotate(0deg)!important;
+  box-shadow:4px 6px 20px rgba(0,0,0,.35);
+  z-index:50!important;
+}
+@keyframes noteAppear{
+  from{opacity:0;transform:scale(.6) rotate(0deg);}
+  to{opacity:1;}
+}
+.note-header{
+  display:flex;align-items:center;gap:6px;margin-bottom:8px;
+}
+.note-avatar{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:white;font-weight:500;flex-shrink:0;
+}
+.note-author{font-size:10px;font-weight:500;color:rgba(0,0,0,.55);letter-spacing:.03em;}
+.note-text{font-size:12px;line-height:1.65;color:rgba(0,0,0,.7);font-weight:300;}
+.note-tag{
+  position:absolute;bottom:8px;right:10px;
+  font-size:9px;color:rgba(0,0,0,.3);letter-spacing:.05em;
+}
+.note-pin{
+  position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  width:12px;height:12px;border-radius:50%;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.input-area{
+  position:relative;z-index:10;
+  padding:16px 24px 24px;
+  border-top:0.5px solid rgba(238,214,236,.15);
+  background:rgba(45,15,45,.6);
+  backdrop-filter:blur(12px);
+  flex-shrink:0;
+}
+.input-label{
+  font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.4);
+  text-transform:uppercase;margin-bottom:10px;
+}
+.input-row{display:flex;gap:10px;align-items:flex-end;}
+.input-name{
+  background:rgba(255,255,255,.08);border:0.5px solid rgba(238,214,236,.2);
+  border-radius:8px;padding:9px 14px;
+  font-size:12px;color:white;font-family:'Noto Sans SC',sans-serif;
+  outline:none;width:140px;
+}
+.input-name::placeholder{color:rgba(255,255,255,.25);}
+.input-name:focus{border-color:rgba(212,168,208,.5);background:rgba(255,255,255,.11);}
+.input-text{
+  flex:1;
+  background:rgba(255,255,255,.08);border:0.5px solid rgba(238,214,236,.2);
+  border-radius:8px;padding:9px 14px;
+  font-size:13px;color:white;font-family:'Noto Sans SC',sans-serif;
+  outline:none;resize:none;height:42px;line-height:1.5;
+}
+.input-text::placeholder{color:rgba(255,255,255,.25);}
+.input-text:focus{border-color:rgba(212,168,208,.5);background:rgba(255,255,255,.11);}
+.submit-btn{
+  background:var(--rose);color:var(--deep);border:none;border-radius:8px;
+  padding:0 22px;height:42px;
+  font-size:12px;font-family:'Noto Sans SC',sans-serif;font-weight:500;
+  letter-spacing:.1em;cursor:pointer;transition:all .18s;
+  white-space:nowrap;flex-shrink:0;
+}
+.submit-btn:hover{background:white;transform:translateY(-1px);}
+.submit-btn:active{transform:scale(.97);}
+.input-hint{
+  margin-top:8px;font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.05em;
+}
+.note-count{
+  position:fixed;top:24px;right:28px;z-index:20;
+  font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em;
+}
+.loading-tip{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  color:rgba(255,255,255,.5);font-size:12px;
+}
+</style>
+<!-- 引入 Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div class="bg-deco">
+  <div class="bg-circle" style="width:400px;height:400px;top:-150px;right:-100px;"></div>
+  <div class="bg-circle" style="width:280px;height:280px;bottom:-80px;left:-60px;"></div>
+  <div class="bg-circle" style="width:200px;height:200px;top:40%;left:30%;"></div>
+</div>
+
+<div class="note-count" id="note-count">0 条留言</div>
+
+<div class="header">
+  <div class="header-eyebrow">Fan Wall · 同人留言墙</div>
+  <div class="header-title">你的<em>入坑瞬间</em>是什么？</div>
+  <div class="header-sub">写下你的故事，贴在这里，所有人都能看见</div>
+</div>
+
+<div class="wall-area">
+  <div class="wall-inner" id="wall">
+    <div class="loading-tip" id="loading-tip">正在加载留言墙...</div>
+  </div>
+</div>
+
+<div class="input-area">
+  <div class="input-label">写下你的留言（所有人可见）</div>
+  <div class="input-row">
+    <input class="input-name" id="input-name" placeholder="你的名字（选填）" maxlength="8">
+    <textarea class="input-text" id="input-text" placeholder="我的入坑瞬间是……" maxlength="60"></textarea>
+    <button class="submit-btn" onclick="submitNote()">贴上去 →</button>
+  </div>
+  <div class="input-hint">最多60字 · 留言会同步到云端，所有人都能看到</div>
+</div>
+
+<script>
+// 你的完整 Firebase 配置（已全部填好）
+const firebaseConfig = {
+  apiKey: "AIzaSyDT29mH2-1s0ZoRshRzZqWBFh-tCYYn0rc",
+  authDomain: "fanfic-ugcwall-da828.firebaseapp.com",
+  databaseURL: "https://fanfic-ugcwall-da828-default-rtdb.firebaseio.com/",
+  projectId: "fanfic-ugcwall-da828",
+  storageBucket: "fanfic-ugcwall-da828.firebasestorage.app",
+  messagingSenderId: "728677762265",
+  appId: "1:728677762265:web:6f0d9cc3944f4da1ac2ac8",
+  measurementId: "G-7WWQ6T01PJ"
+};
+
+// 初始化 Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database().ref('fanfic-notes');
+
+const NOTE_COLORS = [
+  {bg:'#F9EDF7',pin:'#C49AC0'},
+  {bg:'#F5E8F4',pin:'#B490B0'},
+  {bg:'#EDE0F0',pin:'#9A6A9A'},
+  {bg:'#F7F0FC',pin:'#C49AC0'},
+  {bg:'#F2E4EF',pin:'#D4A8D0'},
+  {bg:'#FBF0FA',pin:'#B490B0'},
+  {bg:'#EAD8F2',pin:'#9A6A9A'},
+];
+const AVATAR_COLORS=['#C49AC0','#9A6A9A','#B490B0','#7A4A7A','#D4A8D0'];
+const TAGS=['✦ 为爱发电','✦ 圈地自萌','✦ 嗑CP中','✦ 同好相遇','✦ 入坑记','✦ 太太们'];
+
+let noteCount = 0;
+const wall = document.getElementById('wall');
+
+function getWallSize(){
+  return {w:wall.offsetWidth, h:wall.offsetHeight};
+}
+
+function createNoteEl(data){
+  const {name,text,tag,rotate,x,y,colorIdx} = data;
+  const color = NOTE_COLORS[colorIdx % NOTE_COLORS.length];
+  const avatarColor = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length];
+  const displayName = name || '匿名同好';
+  const initial = displayName.charAt(0);
+  const {w,h} = getWallSize();
+  const left = (x/100)*Math.max(0,w-180);
+  const top = (y/100)*Math.max(0,h-160);
+  const el = document.createElement('div');
+  el.className = 'note-card';
+  el.style.cssText = `
+    left:${left}px;top:${top}px;
+    transform:rotate(${rotate}deg);
+    background:${color.bg};
+    z-index:10;
+  `;
+  el.innerHTML = `
+    <div class="note-pin" style="background:${color.pin}"></div>
+    <div class="note-header">
+      <div class="note-avatar" style="background:${avatarColor}">${initial}</div>
+      <div class="note-author">${displayName}</div>
+    </div>
+    <div class="note-text">${text}</div>
+    <div class="note-tag">${tag || TAGS[Math.floor(Math.random()*TAGS.length)]}</div>
+  `;
+  el.addEventListener('click',()=>{
+    document.querySelectorAll('.note-card').forEach(n=>n.style.zIndex='10');
+    el.style.zIndex='50';
+  });
+  return el;
+}
+
+// 提交留言到云端
+function submitNote(){
+  const name = document.getElementById('input-name').value.trim();
+  const text = document.getElementById('input-text').value.trim();
+  if(!text){
+    const input = document.getElementById('input-text');
+    input.style.borderColor='rgba(238,214,236,.6)';
+    input.focus();
+    setTimeout(()=>input.style.borderColor='',1000);
+    return;
+  }
+  const newNote = {
+    name: name,
+    text: text,
+    tag: TAGS[Math.floor(Math.random()*TAGS.length)],
+    rotate: Math.random()*8-4,
+    colorIdx: Math.floor(Math.random()*NOTE_COLORS.length),
+    x: Math.random()*100,
+    y: Math.random()*100,
+    createdAt: Date.now()
+  };
+  db.push(newNote).then(()=>{
+    document.getElementById('input-name').value='';
+    document.getElementById('input-text').value='';
+  });
+}
+
+// 监听云端留言新增，实时渲染
+db.on('child_added', snap => {
+  document.getElementById('loading-tip')?.remove();
+  const note = snap.val();
+  const el = createNoteEl(note);
+  wall.appendChild(el);
+  noteCount++;
+  updateCount();
+});
+
+function updateCount(){
+  document.getElementById('note-count').textContent = noteCount + ' 条留言';
+}
+
+document.getElementById('input-text').addEventListener('keydown',e=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); submitNote(); }
+});
+</script>
+</body>
+</html>
