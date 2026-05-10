@@ -256,8 +256,8 @@ function submitNote(){
     tag: TAGS[Math.floor(Math.random()*TAGS.length)],
     rotate: Math.random()*8-4,
     colorIdx: Math.floor(Math.random()*NOTE_COLORS.length),
-    x: Math.random()*100,
-    y: Math.random()*100,
+    x: Math.random() * 85, // 限制在 0-85% 之间
+    y: Math.random() * 80, // 限制在 0-80% 之间
     createdAt: Date.now()
   };
   db.push(newNote).then(()=>{
